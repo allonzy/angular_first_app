@@ -1,0 +1,30 @@
+{
+	"includes":[
+		"parameter.json"
+	],
+	"view":{
+		"directory":"",
+		"view_engine":{
+			"handlebars":{
+				"partials_location":[
+					{
+						"directory":"views/partials/**/*.hbs",
+						"moduleNameRegex":"views\/partials\/(.*).hbs"
+					},
+					{
+						"directory":"app/**/views/partials/*.hbs",
+						"moduleNameRegex":"app\/(.*)\/views\/partials\/(.*).hbs"
+					},
+					{
+						"directory":"views/layout/**.hbs",
+						"modueNameRegex":"views\/layout\/(.*).hbs"
+					},
+					{
+						"directory":"app/**/views/layout/*.hbs",
+						"moduleNameRegex":"app\/(.*)\/views\/layout\/(.*).hbs"
+					}
+				]
+			}
+		}
+	}
+}
