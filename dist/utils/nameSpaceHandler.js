@@ -5,12 +5,14 @@ exports.createNameSpace = function (modulePath, moduleNameRegexp, separator, cal
     glob(modulePath, function (er, files) {
         files.forEach(function (file) {
             var re = new RegExp(moduleNameRegexp);
-            let match = re.exec(file);
-            let moduleName = match.splice(1)
-                .join('/')
-                .replace(new RegExp('(\/)+', 'g'), '/')
-                .replace('/', separator);
-            callBack(file, moduleName);
+            let matches = re.exec(file);
+            if (matches) {
+                let moduleName = matches.splice(1)
+                    .join('/')
+                    .replace(new RegExp('(\/)+', 'g'), '/')
+                    .replace('/', separator);
+                callBack(file, moduleName);
+            }
         });
     });
 };

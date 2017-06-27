@@ -1,4 +1,4 @@
-import * as fs from 'file-system';
+import * as fs from 'fs-extra';
 
 export let recursiveIncludeJson = function (rootDir,fileName){
 	let includedObject = JSON.parse(fs.readFileSync(rootDir+'/'+fileName));

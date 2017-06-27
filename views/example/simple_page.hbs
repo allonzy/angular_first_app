@@ -1,1 +1,11 @@
-{{content}}
+{{#extend "stylesheets"}}
+<link rel="stylesheet" href="/css/index.css"/>
+{{/extend}}
+
+let the magic begin
+
+{{#extend "scripts"}}
+<script>
+  document.write('foo bar!');
+</script>
+{{/extend}}

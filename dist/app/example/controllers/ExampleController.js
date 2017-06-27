@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
 const routing_controllers_1 = require("routing-controllers");
-let TodoController = class TodoController {
+let ExampleController = class ExampleController {
     renderError() {
         throw new routing_controllers_1.InternalServerError("hello world error");
     }
@@ -27,23 +27,23 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], TodoController.prototype, "renderError", null);
+], ExampleController.prototype, "renderError", null);
 __decorate([
-    routing_controllers_1.Get("renderFromApp"),
-    routing_controllers_1.Render("/helloWorld/views/simple_page"),
+    routing_controllers_1.Get("/renderPageFromApp"),
+    routing_controllers_1.Render("example/views/simple_page"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], TodoController.prototype, "renderFromApp", null);
+], ExampleController.prototype, "renderFromApp", null);
 __decorate([
-    routing_controllers_1.Get("renderFromView"),
-    routing_controllers_1.Render("/example/simple_page"),
+    routing_controllers_1.Get("/renderPageFromViews"),
+    routing_controllers_1.Render("example/simple_page"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], TodoController.prototype, "renderfromView", null);
-TodoController = __decorate([
+], ExampleController.prototype, "renderfromView", null);
+ExampleController = __decorate([
     routing_controllers_1.Controller()
-], TodoController);
-exports.TodoController = TodoController;
+], ExampleController);
+exports.ExampleController = ExampleController;
 //# sourceMappingURL=ExampleController.js.map

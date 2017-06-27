@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = require("file-system");
+const fs = require("fs-extra");
 exports.recursiveIncludeJson = function (rootDir, fileName) {
     let includedObject = JSON.parse(fs.readFileSync(rootDir + '/' + fileName));
     let object = {};

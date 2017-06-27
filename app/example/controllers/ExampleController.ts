@@ -4,18 +4,18 @@ import {Controller, Param, Body, Get, Post, Put, Delete,Render,InternalServerErr
 
 
 @Controller()
-export class TodoController {
+export class ExampleController {
     @Get("/error")
     renderError() {
     	   throw new InternalServerError("hello world error");    	
     }
-    @Get("renderFromApp")
-    @Render("/helloWorld/views/simple_page")
+    @Get("/renderPageFromApp")
+    @Render("example/views/simple_page")
     renderFromApp() {
            return {content: "lorem ipsum sit dolor amet "};
     }
-    @Get("renderFromView")
-    @Render("/example/simple_page")
+    @Get("/renderPageFromViews")
+    @Render("example/simple_page")
     renderfromView() {
            return {content: "lorem ipsum sit dolor amet "};
     }

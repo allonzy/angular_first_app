@@ -5,17 +5,18 @@ import * as morgan from 'morgan';
 import * as bodyParser from "body-parser";
 import * as mongoose from 'mongoose';
 import * as methodOverride from 'method-override';
-import * as fs from 'file-system';
+// import * as fs from 'file-system';
+import * as fs from 'fs-extra';
 import * as hbs from 'hbs';
 import * as handlebars from 'handlebars';
 import {useExpressServer} from "routing-controllers";
 import * as uniqueValidator from'mongoose-unique-validator';
-import * as errorHandler from'express-error-handler'
 import * as layouts from 'handlebars-layouts';
-import {createNameSpace} from './utils/nameSpaceHandler';
-import {recursiveIncludeJson} from './utils/readConfig'
 import * as glob from 'glob';
 
+import {createNameSpace} from './utils/nameSpaceHandler';
+import {recursiveIncludeJson} from './utils/readConfig';
+import {errorHandler} from './utils/errorHandler';
 //================================================
 
 //================================================
@@ -36,14 +37,25 @@ app.use(methodOverride());
 // ===================== Handlebars (templating system) ===================================
 let hbsParam = config.view.view_engine.handlebars;
 
-
 // Add the layout system to handlebars
-hbs.registerHelper(layouts(handlebars));
+var blocks = {};
 
+hbs.registerHelper('extend', function(name, context) {
+    var block = blocks[name];
+    if (!block) {
+        block = blocks[name] = [];
+    }
 
+    block.push(context.fn(this)); // for older versions of handlebars, use block.push(context(this));
+});
 
-//TODO read directory from configs
-// set config from config.json
+hbs.registerHelper('block', function(name) {
+    var val = (blocks[name] || []).join('\n');
+    // clear the block
+    blocks[name] = [];
+    return val;
+});
+// Register all partials with namespace
 if(hbsParam.partials_location){
 		var registeredPartials = [];
 		for (let i in hbsParam.partials_location){
@@ -55,19 +67,41 @@ if(hbsParam.partials_location){
 				console.log("register "+file+" as {{>"+nameSpace+"}}");
 			}else{
 				console.error("\x1b[31m%s\x1b[0m",
-						"nameSpace error:try to register "+file+" as {{>"+nameSpace+"}} \n" 
-						+"check your views directory to resolve conflict"
+						"nameSpace error:fail to register "+file+" as {{>"+nameSpace+"}} \n" 
+						+"check your partials directories to resolve conflict"
 					);
 			}
 		});	
 	}
 }
-if(config.view.baseDir){
-	app.set('views',[config.view.directory,'app/**/views/']);
-}
 
+
+// ============================= Views ===============================================
+
+app.set('views',[__dirname+"/"+config.view.directory+"/",__dirname+"/app/"]);
 app.set('view engine', 'hbs');
 
+//=============================Public dir ==================================================
+//Create symlink from app to public dir
+fs.remove(config.public+"/app",function(err){
+	if(err) throw new Error(err);
+	console.log("clear existing symlink to "+config.public+"/app");	
+	// link all public from app to public 
+	createNameSpace('app/**/'+config.public+'/',"app\/(.*)\/"+config.public+"\/",'/',function(file,nameSpace){
+		fs.ensureSymlink(__dirname+"/"+file,__dirname+"/"+config.public+'/app/'+nameSpace,function(err){
+			if(err) throw new Error(err);
+			console.log("create symlink: "+file+" -> "+"app/"+nameSpace);
+		});
+	});
+});
+//====================== Controller/Routing =========================
+// Register controller
+useExpressServer(app, {
+	defaultErrorHandler: false, // we use custom error handler 
+    controllers:[__dirname+"/app/*/controllers/*{.js,.ts}"],
+    middlewares: [__dirname + "/node_modules/**/middlewares/*{.js,.ts}"]
+});
+app.use(router);
 //==========================Error handling =================================================
 switch(config.env){
 	case 'dev':
@@ -82,28 +116,7 @@ switch(config.env){
 		break;
 }
 
-app.use(function(err, req, res, next){
-	console.log(app.get('views'));
-	let status = (err.httpCode)?err.httpCode:500;
-	res.statusstatus
-	let errorPage = fs.existsSync(app.get('views')+'/error-pages/'+status+'.hbs')?'error-pages/'+status+'.hbs'
-			:'error-pages/default.hbs';
-	if (req.accepts('html')) {
-		res.render(errorPage, {
-			status:status,
-			error: err,
-			url: req.url,
-			contact:config.contact
-		});
-	}
-	else if (req.accepts('json')) {
-		res.send({
-			status:status,
-			error:err,
-			contact:config.contact
-		});
-	}
-});
+app.use(errorHandler);
 
 //======================== Database connect (mongoose) =============================
 let db = config.database;
@@ -121,17 +134,9 @@ mongoose.plugin(uniqueValidator);
 mongoose.connect(dbConnectUri);
 console.log("Connected to "+dbConnectUri);
 
-//====================== Set up the routing of the app =========================
-// Register controller
-useExpressServer(app, {
-	defaultErrorHandler: false, // we use custom error handler 
-    controllers:[__dirname+"/app/*/controllers/*{.js,.ts}"],
-    middlewares: [__dirname + "/node_modules/**/middlewares/*{.js,.ts}"]
-});
-app.use(router);
+
 
 //====================================Start the server ======================================
 let serv = config.server;
 app.listen(serv.port,serv.host);
 console.log("App listening "+serv.host+":"+serv.port);
-

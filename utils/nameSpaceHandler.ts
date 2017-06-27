@@ -1,4 +1,4 @@
-import * as fs from 'file-system';
+import * as fs from 'fs-extra';
 import * as glob from 'glob';
 
 export let createNameSpace = function (modulePath,moduleNameRegexp,separator,callBack){
@@ -7,12 +7,14 @@ export let createNameSpace = function (modulePath,moduleNameRegexp,separator,cal
 	glob(modulePath, function (er, files) {
 		files.forEach(function (file){
 			var re = new RegExp(moduleNameRegexp);
-			let match = re.exec(file);
-			let moduleName = match.splice(1)
+			let matches = re.exec(file);
+			if(matches){
+				let moduleName = matches.splice(1)
 								.join('/')
 								.replace(new RegExp('(\/)+','g'),'/')
 								.replace('/',separator);
-			callBack(file,moduleName);
+				callBack(file,moduleName);
+			}
 		});
 	});
 }
