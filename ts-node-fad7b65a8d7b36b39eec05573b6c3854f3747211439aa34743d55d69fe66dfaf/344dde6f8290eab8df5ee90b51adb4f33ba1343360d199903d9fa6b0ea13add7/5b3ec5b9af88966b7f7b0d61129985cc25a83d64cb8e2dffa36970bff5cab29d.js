@@ -1,9 +1,0 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Todo_1 = require("../model/Todo");
-const restify = require("express-restify-mongoose");
-const server_1 = require("../../../server");
-exports.todoRest = restify.serve(server_1.router, Todo_1.Todo, {
-    version: '/v1'
-});
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiL2hvbWUvc2ltb252aXZpZXIvd29ya3NwYWNlL2FwcGxpX2FuZ3VsYXIvbXlfZmlyc3RfYW5ndWxhcl9hcHAvYXBwL2V4YW1wbGUvY29udHJvbGxlcnMvUmVzdEVuZFBvaW50LnRzIiwic291cmNlcyI6WyIvaG9tZS9zaW1vbnZpdmllci93b3Jrc3BhY2UvYXBwbGlfYW5ndWxhci9teV9maXJzdF9hbmd1bGFyX2FwcC9hcHAvZXhhbXBsZS9jb250cm9sbGVycy9SZXN0RW5kUG9pbnQudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQSx3Q0FBcUM7QUFDckMsb0RBQW9EO0FBRXBELDRDQUFzQztBQUUzQixRQUFBLFFBQVEsR0FBRyxPQUFPLENBQUMsS0FBSyxDQUFDLGVBQU0sRUFBQyxXQUFJLEVBQzlDO0lBQ0ksT0FBTyxFQUFDLEtBQUs7Q0FDaEIsQ0FBQyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgVG9kbyB9IGZyb20gXCIuLi9tb2RlbC9Ub2RvXCI7XG5pbXBvcnQgKiBhcyByZXN0aWZ5IGZyb20gJ2V4cHJlc3MtcmVzdGlmeS1tb25nb29zZSc7XG5cbmltcG9ydCB7cm91dGVyfSBmcm9tICcuLi8uLi8uLi9zZXJ2ZXInXG5cbmV4cG9ydCB2YXIgdG9kb1Jlc3QgPSByZXN0aWZ5LnNlcnZlKHJvdXRlcixUb2RvLFxuXHR7XG4gICAgXHR2ZXJzaW9uOicvdjEnIC8vRGVmYXVsdCB2YWx1ZSA6IC92MVxuXHR9KTtcbiJdfQ==
