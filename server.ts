@@ -1,5 +1,4 @@
 // server.js
-// import * as parameter from './config/parameter.json';
 import "reflect-metadata";
 import * as express from 'express';
 import * as morgan from 'morgan';
@@ -13,18 +12,17 @@ import {useExpressServer} from "routing-controllers";
 import * as uniqueValidator from'mongoose-unique-validator';
 import * as errorHandler from'express-error-handler'
 import * as layouts from 'handlebars-layouts';
-import {registerPartialsFromRoot} from '../utils/registerPartialsFromRoot'
-//================================================
+import {createNameSpace} from './utils/nameSpaceHandler';
+import {recursiveIncludeJson} from './utils/readConfig'
+import * as glob from 'glob';
 
-//Register a partial directory recursively with a namespace (test.bite...)
-registerPartialsFromRoot('app','');
+//================================================
 
 //================================================
 
 declare var __dirname;
-
 // ==============Export component, (can be needed from controllers) ================
-export let parameter = JSON.parse(fs.readFileSync('./config/parameter.json'));
+export let config = recursiveIncludeJson('./config','config.json');
 export let app = express();                                            // create our app w/ express
 export const router = express.Router();
 
@@ -36,26 +34,42 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse applica
 app.use(methodOverride());
 
 // ===================== Handlebars (templating system) ===================================
-let hbsParam = parameter.view.view_engine.handlebars;
+let hbsParam = config.view.view_engine.handlebars;
 
 
 // Add the layout system to handlebars
 hbs.registerHelper(layouts(handlebars));
 
-// set parameter from parameter.json
-if(hbsParam.partials_dir){
-	hbs.registerPartials(__dirname +"/"+ hbsParam.partials_dir);
-	hbs.registerPartials(__dirname +"app/");
-}
 
-if(parameter.view.baseDir){
-	app.set('views',[parameter.view.directory,'app/**/views/']);
+
+//TODO read directory from configs
+// set config from config.json
+if(hbsParam.partials_location){
+		var registeredPartials = [];
+		for (let i in hbsParam.partials_location){
+			let partial = hbsParam.partials_location[i];
+			createNameSpace(partial.directory,partial.moduleNameRegex,'.',function(file,nameSpace){
+			if(registeredPartials.indexOf(nameSpace) === -1){
+				hbs.registerPartial(nameSpace,file);
+				registeredPartials.push(nameSpace);
+				console.log("register "+file+" as {{>"+nameSpace+"}}");
+			}else{
+				console.error("\x1b[31m%s\x1b[0m",
+						"nameSpace error:try to register "+file+" as {{>"+nameSpace+"}} \n" 
+						+"check your views directory to resolve conflict"
+					);
+			}
+		});	
+	}
+}
+if(config.view.baseDir){
+	app.set('views',[config.view.directory,'app/**/views/']);
 }
 
 app.set('view engine', 'hbs');
 
 //==========================Error handling =================================================
-switch(parameter.env){
+switch(config.env){
 	case 'dev':
 		// development error handler
 		// will print stacktrace
@@ -79,20 +93,20 @@ app.use(function(err, req, res, next){
 			status:status,
 			error: err,
 			url: req.url,
-			contact:parameter.contact
+			contact:config.contact
 		});
 	}
 	else if (req.accepts('json')) {
 		res.send({
 			status:status,
 			error:err,
-			contact:parameter.contact
+			contact:config.contact
 		});
 	}
 });
 
 //======================== Database connect (mongoose) =============================
-let db = parameter.database;
+let db = config.database;
 let dbConnectUri = db.driver+"://"
     +((db.username && db.password)?
         (db.username+':'+db.password+"@"):''
@@ -117,7 +131,7 @@ useExpressServer(app, {
 app.use(router);
 
 //====================================Start the server ======================================
-let serv = parameter.server;
+let serv = config.server;
 app.listen(serv.port,serv.host);
 console.log("App listening "+serv.host+":"+serv.port);
 

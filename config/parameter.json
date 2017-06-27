@@ -14,13 +14,5 @@
 	},
 	"contact":{
 		"mail":"example@example.fr"
-	},
-	"view":{
-		"directory":"",
-		"view_engine":{
-			"handlebars":{
-				"partials_dir":"views/partials/"
-			}
-		}
 	}
 }
