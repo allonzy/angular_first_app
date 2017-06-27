@@ -1,0 +1,1 @@
+{"version":3,"file":"RestEndPoint.js","sourceRoot":"","sources":["../../../../app/todo-list/controllers/RestEndPoint.ts"],"names":[],"mappings":";;AAAA,+CAA4C;AAC5C,oDAAoD;AAEpD,4CAAsC;AAE3B,QAAA,QAAQ,GAAG,OAAO,CAAC,KAAK,CAAC,eAAM,EAAC,WAAI,EAC9C;IACI,OAAO,EAAC,KAAK;CAChB,CAAC,CAAC"}

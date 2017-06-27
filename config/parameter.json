@@ -1,0 +1,26 @@
+{
+	"env":"dev",
+	"database":{
+		"driver":"mongodb",
+		"host":"localhost",
+		"port":"27017",
+		"username":null,
+		"password":null,
+		"dbname":"test"
+	},
+	"server":{
+		"host":"localhost",
+		"port":8080
+	},
+	"contact":{
+		"mail":"example@example.fr"
+	},
+	"view":{
+		"directory":"",
+		"view_engine":{
+			"handlebars":{
+				"partials_dir":"views/partials/"
+			}
+		}
+	}
+}
