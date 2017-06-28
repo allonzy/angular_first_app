@@ -5,7 +5,7 @@
   "main": "server.ts",
   "author": "allonzy",
   "dependencies": {
-    "@types/node": "^8.0.2",
+    "@types/node": "^8.0.4",
     "angular": "^1.6.4",
     "body-parser": "^1.17.2",
     "cookie-parser": "~1.4.3",
@@ -14,7 +14,6 @@
     "es6-shim": "^0.35.3",
     "express": "~4.15.2",
     "express-error-handler": "^1.1.0",
-    "express-handlebars": "^3.0.0",
     "express-json-routes": "^0.1.2",
     "express-restify-mongoose": "^4.1.3",
     "file-system": "^2.2.2",
@@ -33,17 +32,21 @@
     "routing-controllers": "^0.7.0"
   },
   "devDependencies": {
+    "chai": "^4.0.2",
     "gulp": "^3.9.1",
     "gulp-uglify": "^3.0.0",
+    "mocha": "^3.4.2",
     "nodemon": "^1.11.0",
+    "selenium-webdriver": "^3.4.0",
+    "ts-node": "^3.1.0",
     "tsd": "^0.6.5",
-    "typescript": "^2.4.0"
+    "typescript": "^2.4.1"
   },
   "scripts": {
     "prestart": "npm run tsc",
     "start": "ts-node server.ts",
     "tsc": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha -r ts-node/register test/**/*.ts"
   },
   "description": "A symfony like nodejs server",
   "repository": "https://github.com/allonzy/angular_first_app",

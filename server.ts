@@ -6,19 +6,32 @@ import * as bodyParser from "body-parser";
 import * as mongoose from 'mongoose';
 import * as methodOverride from 'method-override';
 // import * as fs from 'file-system';
+import * as handlebars from 'handlebars';
+// import * as exphbs from 'express-handlebars';
 import * as fs from 'fs-extra';
 import * as hbs from 'hbs';
-import * as handlebars from 'handlebars';
 import {useExpressServer} from "routing-controllers";
 import * as uniqueValidator from'mongoose-unique-validator';
 import * as layouts from 'handlebars-layouts';
 import * as glob from 'glob';
 
-import {createNameSpace} from './utils/nameSpaceHandler';
-import {recursiveIncludeJson} from './utils/readConfig';
-import {errorHandler} from './utils/errorHandler';
-//================================================
 
+
+import {createNameSpace} from './utils/NameSpaceHandler';
+import {recursiveIncludeJson} from './utils/ReadConfig';
+import {errorHandler} from './utils/ErrorHandler';
+//================================================
+export let color = {
+	black:"\x1b[30m%s\x1b[0m",
+	red:"\x1b[31m%s\x1b[0m",
+	green:"\x1b[32m%s\x1b[0m",
+	yellow:"\x1b[33m%s\x1b[0m",
+	blue:"\x1b[34m%s\x1b[0m",
+	magenta:"\x1b[35m%s\x1b[0m",
+	cyan:"\x1b[36m%s\x1b[0m",
+	white:"\x1b[36m%s\x1b[0m",		
+		
+}
 //================================================
 
 declare var __dirname;
@@ -34,12 +47,16 @@ app.use(bodyParser.json());                                     // parse applica
 app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
 app.use(methodOverride());
 
+// ============================= Views ===============================================
+app.set('views',[__dirname+"/"+config.view.directory+"/",__dirname+"/app/"]);
+
 // ===================== Handlebars (templating system) ===================================
+
 let hbsParam = config.view.view_engine.handlebars;
 
 // Add the layout system to handlebars
+/*
 var blocks = {};
-
 hbs.registerHelper('extend', function(name, context) {
     var block = blocks[name];
     if (!block) {
@@ -55,31 +72,45 @@ hbs.registerHelper('block', function(name) {
     blocks[name] = [];
     return val;
 });
+*/
 // Register all partials with namespace
+
 if(hbsParam.partials_location){
-		var registeredPartials = [];
-		for (let i in hbsParam.partials_location){
-			let partial = hbsParam.partials_location[i];
-			createNameSpace(partial.directory,partial.moduleNameRegex,'.',function(file,nameSpace){
-			if(registeredPartials.indexOf(nameSpace) === -1){
-				hbs.registerPartial(nameSpace,file);
-				registeredPartials.push(nameSpace);
-				console.log("register "+file+" as {{>"+nameSpace+"}}");
-			}else{
-				console.error("\x1b[31m%s\x1b[0m",
-						"nameSpace error:fail to register "+file+" as {{>"+nameSpace+"}} \n" 
-						+"check your partials directories to resolve conflict"
-					);
-			}
-		});	
+	var registeredPartials = [];
+	var promises = [];
+	for (let i in hbsParam.partials_location){
+		let partial = hbsParam.partials_location[i];
+		let p_1 = new Promise((resolve_1,reject_1)=>{
+			createNameSpace(partial.directory,partial.moduleNameRegex,'.',function(file,nameSpace,resolve_2,reject_2){
+				if(registeredPartials.indexOf(nameSpace) === -1){
+					hbs.handlebars.registerPartial(nameSpace,fs.readFileSync(file).toString());
+					registeredPartials.push(nameSpace);
+					console.log("register "+file+" as {{> "+nameSpace+" }}");
+					resolve_2();
+				}else{
+					console.warn(color.yellow,
+							"nameSpace error:fail to register "+file+" as {{>"+nameSpace+"}} \n" 
+							+"check your partials directories to resolve conflict"
+						);
+					resolve_2();
+				}
+			},resolve_1,reject_1);
+		});
+
+		promises.push(p_1);
 	}
+	Promise.all(promises).then(values=>{
+		hbs.registerHelper(layouts(hbs.handlebars));
+		app.set('view engine', 'hbs');
+	}).catch(values=>{
+		console.log(color.red,'fail to set view engine');
+		console.error(color.red,values);
+		process.exit(1);
+	});
 }
 
 
-// ============================= Views ===============================================
 
-app.set('views',[__dirname+"/"+config.view.directory+"/",__dirname+"/app/"]);
-app.set('view engine', 'hbs');
 
 //=============================Public dir ==================================================
 //Create symlink from app to public dir
@@ -93,7 +124,10 @@ fs.remove(config.public+"/app",function(err){
 			console.log("create symlink: "+file+" -> "+"app/"+nameSpace);
 		});
 	});
+
 });
+
+
 //====================== Controller/Routing =========================
 // Register controller
 useExpressServer(app, {
@@ -134,9 +168,7 @@ mongoose.plugin(uniqueValidator);
 mongoose.connect(dbConnectUri);
 console.log("Connected to "+dbConnectUri);
 
-
-
 //====================================Start the server ======================================
 let serv = config.server;
 app.listen(serv.port,serv.host);
-console.log("App listening "+serv.host+":"+serv.port);
+console.log(color.green,"server started on :"+serv.host+":"+serv.port);

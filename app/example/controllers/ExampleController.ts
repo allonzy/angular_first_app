@@ -5,19 +5,22 @@ import {Controller, Param, Body, Get, Post, Put, Delete,Render,InternalServerErr
 
 @Controller()
 export class ExampleController {
+    @Get("/sayHello")
+    sayHello(){
+        return 'Hello World!';
+    }
     @Get("/error")
-    renderError() {
+    throwError() {
     	   throw new InternalServerError("hello world error");    	
     }
     @Get("/renderPageFromApp")
     @Render("example/views/simple_page")
     renderFromApp() {
-           return {content: "lorem ipsum sit dolor amet "};
+           return {text: "lorem ipsum sit dolor amet"};
     }
     @Get("/renderPageFromViews")
     @Render("example/simple_page")
     renderfromView() {
-           return {content: "lorem ipsum sit dolor amet "};
+           return {text: "lorem ipsum sit dolor amet"};
     }
-
 }

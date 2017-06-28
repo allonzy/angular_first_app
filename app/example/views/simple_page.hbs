@@ -1,11 +1,7 @@
-{{#extend "stylesheets"}}
-<link rel="stylesheet" href="/css/index.css"/>
-{{/extend}}
-<h1>page from app</h1>
-{{content}}
-
-{{#extend "scripts"}}
-<script>
-  document.write('foo bar!');
-</script>
+{{#extend "layout.main"}}
+	{{#content "stylesheets"}}{{/content}}
+	{{#content "body"}}
+	    <h1>page from app</h1>
+		<div id="lorem">{{text}}</div>
+	{{/content}}
 {{/extend}}

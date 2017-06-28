@@ -1,11 +1,13 @@
-{{#extend "stylesheets"}}
-<link rel="stylesheet" href="/css/index.css"/>
-{{/extend}}
-
-let the magic begin
-
-{{#extend "scripts"}}
-<script>
-  document.write('foo bar!');
-</script>
+{{#extend "layout.main"}}
+	{{#content "stylesheets"}}
+	{{/content}}
+	{{#content "body"}}
+		<h1>page from views</h1>
+		{{text}}
+	{{/content}}
+	{{#content "scripts"}}
+	<script>
+	  document.write('foo bar!');
+	</script>
+	{{/content}}
 {{/extend}}

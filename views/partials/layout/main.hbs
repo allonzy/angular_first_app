@@ -3,11 +3,15 @@
 <head>
   <title>{{title}}</title>
 
-  {{{block "stylesheets"}}}
+  {{#block "stylesheets"}}
+  {{/block}}
 </head>
-<body>
-  {{{body}}}
-
-  {{{block "scripts"}}}
-</body>
+    <body>
+        {{#block "body"}}
+        {{/block}}
+ 
+        {{#block "script"}}
+        {{/block}}
+ 
+    </body>
 </html>
