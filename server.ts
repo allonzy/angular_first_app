@@ -4,17 +4,16 @@ import * as express from 'express';
 import * as morgan from 'morgan';
 import * as bodyParser from "body-parser";
 import * as mongoose from 'mongoose';
+import * as bluebird from 'bluebird';
 import * as methodOverride from 'method-override';
-// import * as fs from 'file-system';
-import * as handlebars from 'handlebars';
-// import * as exphbs from 'express-handlebars';
 import * as fs from 'fs-extra';
-import * as hbs from 'hbs';
 import {useExpressServer} from "routing-controllers";
 import * as uniqueValidator from'mongoose-unique-validator';
-import * as layouts from 'handlebars-layouts';
 import * as glob from 'glob';
 
+import * as hbs from 'hbs';
+import * as handlebarsHelper from 'handlebars-helpers'
+import * as layouts from 'handlebars-layouts';
 
 
 import {createNameSpace} from './utils/NameSpaceHandler';
@@ -41,7 +40,7 @@ export let app = express();                                            // create
 export const router = express.Router();
 
 // =========================Set up express ================================================
-app.use(express.static('/web'));                 				// set the static files location /public/img will be /img for users
+app.use(express.static('/public'));                 				// set the static files location /public/img will be /img for users
 app.use(bodyParser.urlencoded({'extended':'true'}));            // parse application/x-www-form-urlencoded
 app.use(bodyParser.json());                                     // parse application/json
 app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
@@ -54,64 +53,48 @@ app.set('views',[__dirname+"/"+config.view.directory+"/",__dirname+"/app/"]);
 
 let hbsParam = config.view.view_engine.handlebars;
 
-// Add the layout system to handlebars
-/*
-var blocks = {};
-hbs.registerHelper('extend', function(name, context) {
-    var block = blocks[name];
-    if (!block) {
-        block = blocks[name] = [];
-    }
-
-    block.push(context.fn(this)); // for older versions of handlebars, use block.push(context(this));
-});
-
-hbs.registerHelper('block', function(name) {
-    var val = (blocks[name] || []).join('\n');
-    // clear the block
-    blocks[name] = [];
-    return val;
-});
-*/
-// Register all partials with namespace
-
 if(hbsParam.partials_location){
 	var registeredPartials = [];
-	var promises = [];
-	for (let i in hbsParam.partials_location){
-		let partial = hbsParam.partials_location[i];
-		let p_1 = new Promise((resolve_1,reject_1)=>{
-			createNameSpace(partial.directory,partial.moduleNameRegex,'.',function(file,nameSpace,resolve_2,reject_2){
-				if(registeredPartials.indexOf(nameSpace) === -1){
-					hbs.handlebars.registerPartial(nameSpace,fs.readFileSync(file).toString());
-					registeredPartials.push(nameSpace);
-					console.log("register "+file+" as {{> "+nameSpace+" }}");
-					resolve_2();
-				}else{
-					console.warn(color.yellow,
-							"nameSpace error:fail to register "+file+" as {{>"+nameSpace+"}} \n" 
-							+"check your partials directories to resolve conflict"
-						);
-					resolve_2();
-				}
-			},resolve_1,reject_1);
+	for (let partial of hbsParam.partials_location){
+		createNameSpace(partial.directory,partial.moduleNameRegex,'.',(file,nameSpace)=>{
+			if(registeredPartials.indexOf(nameSpace) === -1){
+				hbs.handlebars.registerPartial(nameSpace,fs.readFileSync(file).toString());
+				registeredPartials.push(nameSpace);
+				console.log("register "+file+" as {{> "+nameSpace+" }}");
+			}else{
+				console.warn(color.yellow,
+					"nameSpace error:fail to register "+file+" as {{>"+nameSpace+"}} \n" 
+					+"check your partials directories to resolve conflict"
+				);
+			}
 		});
-
-		promises.push(p_1);
 	}
-	Promise.all(promises).then(values=>{
-		hbs.registerHelper(layouts(hbs.handlebars));
-		app.set('view engine', 'hbs');
-	}).catch(values=>{
-		console.log(color.red,'fail to set view engine');
-		console.error(color.red,values);
-		process.exit(1);
-	});
 }
-
-
-
-
+/*
+if(hbsParam.helper_location){
+	var registeredHelpers = [];
+	for (let helper of hbsParam.helper_location){
+		createNameSpace(partial.directory,partial.moduleNameRegex,'.'()(file,nameSpace)=>{
+			if(registeredHelpers.indexOf(nameSpace) === -1){
+				module = require('./'+nameSpace);
+				hbs.handlebars.registerHelper(nameSpace.helperName,helper);
+				registeredHelpers.push(nameSpace);
+				console.log("register "+file+" as {{> "+nameSpace+" }}");
+			}else{
+				console.warn(color.yellow,
+					"nameSpace error:fail to register "+file+" as {{>"+nameSpace+"}} \n" 
+					+"check your partials directories to resolve conflict"
+				);
+			}
+		});
+	}
+}*/
+let utilsHelper = handlebarsHelper({
+		handlebars: hbs.handlebars
+	});
+hbs.registerHelper(layouts(hbs.handlebars));
+hbs.registerHelper(utilsHelper);
+app.set('view engine', 'hbs');
 //=============================Public dir ==================================================
 //Create symlink from app to public dir
 fs.remove(config.public+"/app",function(err){
@@ -164,6 +147,8 @@ let dbConnectUri = db.driver+"://"
 ;
 //Add plugin to mongoose 
 mongoose.plugin(uniqueValidator);
+mongoose.Promise = bluebird;
+
 //Connect to Mongo db
 mongoose.connect(dbConnectUri);
 console.log("Connected to "+dbConnectUri);

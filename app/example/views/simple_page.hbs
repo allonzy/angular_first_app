@@ -1,7 +1,20 @@
 {{#extend "layout.main"}}
-	{{#content "stylesheets"}}{{/content}}
+	{{#content "stylesheets"}}
+
+	{{/content}}
 	{{#content "body"}}
 	    <h1>page from app</h1>
 		<div id="lorem">{{text}}</div>
+		{{lowercase "Foo BAR baZ"}}
+		{{#asyncForm}}
+		{{/asyncForm}}
+
+		<form id = "addtodo" action="/addTodo">
+			<input name="title">
+		</form>
+	  	<a href="#" onclick="document.getElementById('addtodo').submit();"> submit </a>
+		<script src="helloWorld.js"></script>
+		<script src="app/example/js/hello.js"></script>
+
 	{{/content}}
 {{/extend}}

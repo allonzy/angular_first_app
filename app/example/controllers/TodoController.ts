@@ -6,8 +6,7 @@ import {Todo} from '../model/Todo'
 
 @Controller()
 export class TodoController {
-    @Post("/add-todo")
-    @Render("renderTodoList")
+    @Post("/addtodo")
     addTodo(@Param("id") id: number) {
     	let todo1 = new Todo({
     		title:"howdi",
@@ -23,11 +22,16 @@ export class TodoController {
     @Get("/todoList")
     @Render("example/views/renderTodoList")
     renderTodoList(){
-        Todo.find({},function(err,todos){
-            if(err)throw new InternalServerError(err);
-            return todos;
-        });
-
+        return Todo.find({}).lean()
+            .then(elements=>{
+                return {
+                    page:{title:"todo list"},
+                    todos:elements,
+                };
+            })
+            .catch(err=>{
+                if(err)throw new InternalServerError(err);
+            });
     }
 
 }
