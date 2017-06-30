@@ -13,11 +13,11 @@
             "moduleNameRegex": "views/partials/(.*).hbs"
           },
           {
-            "directory": "app/**/views/partials/*.hbs",
+            "directory": "app/**/views/partials/**/*.hbs",
             "moduleNameRegex": "app/(.*)/views/partials/(.*).hbs"
           },
           {
-            "directory": "app/**/public/partials/**.hbs",
+            "directory": "app/**/public/partials/**/*.hbs",
             "moduleNameRegex": "app/(.*)/public/partials/(.*).hbs"
           }
         ]

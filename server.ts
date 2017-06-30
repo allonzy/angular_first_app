@@ -11,11 +11,11 @@ import {useExpressServer} from "routing-controllers";
 import * as uniqueValidator from'mongoose-unique-validator';
 import * as glob from 'glob';
 
-import * as hbs from 'hbs';
+import * as hbs_wrapper from 'hbs';
 import * as handlebarsHelper from 'handlebars-helpers'
 import * as layouts from 'handlebars-layouts';
 
-
+import {helpersBundle} from "./views/helpers/bundle";
 import {createNameSpace} from './utils/NameSpaceHandler';
 import {recursiveIncludeJson} from './utils/ReadConfig';
 import {errorHandler} from './utils/ErrorHandler';
@@ -38,7 +38,7 @@ declare var __dirname;
 export let config = recursiveIncludeJson('./config','config.json');
 export let app = express();                                            // create our app w/ express
 export const router = express.Router();
-
+export let hbs = hbs_wrapper;
 // =========================Set up express ================================================
 app.use(express.static('/public'));                 				// set the static files location /public/img will be /img for users
 app.use(bodyParser.urlencoded({'extended':'true'}));            // parse application/x-www-form-urlencoded
@@ -94,6 +94,8 @@ let utilsHelper = handlebarsHelper({
 	});
 hbs.registerHelper(layouts(hbs.handlebars));
 hbs.registerHelper(utilsHelper);
+hbs.registerHelper(helpersBundle);
+
 app.set('view engine', 'hbs');
 //=============================Public dir ==================================================
 //Create symlink from app to public dir
