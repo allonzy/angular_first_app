@@ -17,7 +17,7 @@ import * as layouts from 'handlebars-layouts';
 
 import {helpersBundle} from "./views/helpers/bundle";
 import {createNameSpace} from './utils/NameSpaceHandler';
-import {recursiveIncludeJson} from './utils/ReadConfig';
+import {readConfig,tree} from './utils/ReadConfig';
 import {errorHandler} from './utils/ErrorHandler';
 //================================================
 export let color = {
@@ -29,23 +29,40 @@ export let color = {
 	magenta:"\x1b[35m%s\x1b[0m",
 	cyan:"\x1b[36m%s\x1b[0m",
 	white:"\x1b[36m%s\x1b[0m",		
-		
 }
 //================================================
 
 declare var __dirname;
 // ==============Export component, (can be needed from controllers) ================
-export let config = recursiveIncludeJson('./config','config.json');
+export let config = readConfig('./config','config.json');
 export let app = express();                                            // create our app w/ express
 export const router = express.Router();
 export let hbs = hbs_wrapper;
 // =========================Set up express ================================================
-app.use(express.static('/public'));                 				// set the static files location /public/img will be /img for users
+             				// set the static files location /public/img will be /img for users
 app.use(bodyParser.urlencoded({'extended':'true'}));            // parse application/x-www-form-urlencoded
 app.use(bodyParser.json());                                     // parse application/json
 app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
 app.use(methodOverride());
-
+//============================= PublicDir ============================================
+if(config.public_directories){
+	var staticDir = [];
+	for (let publicDir of config.public_directories){
+		createNameSpace(publicDir.directory,publicDir.moduleNameRegex,'/',(file,nameSpace)=>{
+			if(staticDir.indexOf(nameSpace) === -1){
+				app.use(config.static_route+'/'+nameSpace, express.static(file))
+				staticDir.push(nameSpace);
+				console.log("route "+file+" to "+config.static_route+"/"+nameSpace);
+			}else{
+				console.warn(color.yellow,
+					"nameSpace error:fail to register "+file+" as {{>"+nameSpace+"}} \n" 
+					+"check your partials directories to resolve conflict"
+				);
+			}
+		});
+	}
+}
+// app.locals = config.locals;
 // ============================= Views ===============================================
 app.set('views',[__dirname+"/"+config.view.directory+"/",__dirname+"/app/"]);
 
@@ -97,21 +114,6 @@ hbs.registerHelper(utilsHelper);
 hbs.registerHelper(helpersBundle);
 
 app.set('view engine', 'hbs');
-//=============================Public dir ==================================================
-//Create symlink from app to public dir
-fs.remove(config.public+"/app",function(err){
-	if(err) throw new Error(err);
-	console.log("clear existing symlink to "+config.public+"/app");	
-	// link all public from app to public 
-	createNameSpace('app/**/'+config.public+'/',"app\/(.*)\/"+config.public+"\/",'/',function(file,nameSpace){
-		fs.ensureSymlink(__dirname+"/"+file,__dirname+"/"+config.public+'/app/'+nameSpace,function(err){
-			if(err) throw new Error(err);
-			console.log("create symlink: "+file+" -> "+"app/"+nameSpace);
-		});
-	});
-
-});
-
 
 //====================== Controller/Routing =========================
 // Register controller

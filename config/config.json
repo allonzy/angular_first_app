@@ -2,7 +2,22 @@
   "includes": [
     "parameter.json"
   ],
-  "public": "public",
+  "static_route": "/static",
+  "locals": {
+    "options": {
+      "assets": "/static"
+    }
+  },
+  "public_directories": [
+    {
+      "directory": "app/**/public",
+      "moduleNameRegex": "app/(.*)/public"
+    },
+    {
+      "directory": "public",
+      "moduleNameRegex": "(.*)"
+    }
+  ],
   "view": {
     "directory": "views",
     "view_engine": {
