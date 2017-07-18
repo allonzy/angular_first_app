@@ -31,14 +31,29 @@ export let color = {
 	white:"\x1b[36m%s\x1b[0m",		
 }
 //================================================
-
+let regexQuote = function(str) {
+  return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+};
 declare var __dirname;
 // ==============Export component, (can be needed from controllers) ================
 export let config = readConfig('./config','config.json');
 export let app = express();                                            // create our app w/ express
 export const router = express.Router();
 export let hbs = hbs_wrapper;
-// =========================Set up express ================================================
+// =========================Set up the logger ================================================
+switch(config.env){
+	case 'dev':
+		// development error handler
+		// will print stacktrace
+		app.use(morgan('dev'));                                
+		break;		
+	case 'prod':
+		// production error handler
+		// no stacktraces leaked to user
+		app.use(morgan('common', { skip: function(req, res) { return res.statusCode < 400 }, stream: __dirname + 'var/logs/prod.log' }));
+		break;
+}// =========================Set up express ================================================
+
              				// set the static files location /public/img will be /img for users
 app.use(bodyParser.urlencoded({'extended':'true'}));            // parse application/x-www-form-urlencoded
 app.use(bodyParser.json());                                     // parse application/json
@@ -115,7 +130,6 @@ hbs.registerHelper(helpersBundle);
 
 app.set('view engine', 'hbs');
 
-//====================== Controller/Routing =========================
 // Register controller
 useExpressServer(app, {
 	defaultErrorHandler: false, // we use custom error handler 
@@ -124,21 +138,17 @@ useExpressServer(app, {
 });
 app.use(router);
 //==========================Error handling =================================================
-switch(config.env){
-	case 'dev':
-		// development error handler
-		// will print stacktrace
-		app.use(morgan('dev'));                                
-		break;		
-	case 'prod':
-		// production error handler
-		// no stacktraces leaked to user
-		app.use(morgan('common', { skip: function(req, res) { return res.statusCode < 400 }, stream: __dirname + 'var/logs/prod.log' }));
-		break;
-}
-
 app.use(errorHandler);
+app.use(function(req, res, next){
+	if(res.statusCode 
+		&& res.statusCode === 404
+		&& req.originalUrl.startsWith(config.static_route) == false){
+			res.status(404).render('error-pages/404', { url: req.originalUrl });
 
+	}else{
+		next();
+	}
+});
 //======================== Database connect (mongoose) =============================
 let db = config.database;
 let dbConnectUri = db.driver+"://"
@@ -158,6 +168,10 @@ mongoose.connect(dbConnectUri);
 console.log("Connected to "+dbConnectUri);
 
 //====================================Start the server ======================================
+app.get('/', function (req, res) {
+  res.render('index');
+})
+
 let serv = config.server;
 app.listen(serv.port,serv.host);
 console.log(color.green,"server started on :"+serv.host+":"+serv.port);

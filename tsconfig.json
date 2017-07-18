@@ -12,7 +12,9 @@
     "listFiles": true,
     "isolatedModules": false,
     "moduleResolution": "node",
-    "suppressImplicitAnyIndexErrors": true
+    "suppressImplicitAnyIndexErrors": true,
+    "baseUrl": "."
+
   },
   "exclude": [
     "dist",

@@ -1,11 +1,9 @@
-<!doctype html>
-<html lang="en-us">
-<head>
-  <title>{{ title }}</title>
-
-</head>
-    <body>
-	{{> hello_partial }}
-	{{ content }}
-    </body>
-</html>
+{{#extend "layout.main"}}
+	{{#content "stylesheets"}}
+	{{/content}}
+	{{#content "body"}}
+		{{> chat.chatBox }}
+	{{/content}}
+	{{#content "scripts"}}
+	{{/content}}
+{{/extend}}

@@ -16,8 +16,10 @@
 <body>
     <div class="cover">
         <h1>Bad Request <small>Error 500</small></h1>
-        <p class="lead">The server send the following error:</p>
-        <p>{{ error }}</p>
+        {{#if error}}
+            <p class="lead">The server send the following error</p>
+            <p>{{{error error }}}</p>
+        {{/if}}
     </div>
     
     <footer>
