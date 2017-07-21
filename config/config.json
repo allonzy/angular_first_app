@@ -13,6 +13,10 @@
       "directory": "app/**/public",
       "moduleNameRegex": "app/(.*)/public"
     },
+        {
+      "directory": "app/**/views",
+      "moduleNameRegex": "app/(.*/views)"
+    },
     {
       "directory": "public",
       "moduleNameRegex": "(.*)"
