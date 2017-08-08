@@ -24,6 +24,7 @@
     "handlebars-layouts": "^3.1.4",
     "hbs": "^4.0.1",
     "html": "^1.0.0",
+    "jquery": "^3.2.1",
     "method-override": "^2.3.9",
     "mongoose": "^4.11.0",
     "mongoose-schema-jsonschema": "^1.1.13",
@@ -31,8 +32,10 @@
     "morgan": "^1.8.2",
     "mustache": "^2.3.0",
     "reflect-metadata": "^0.1.10",
+    "request": "^2.81.0",
     "routing-controllers": "^0.7.0",
-    "safe-eval": "^0.3.0"
+    "safe-eval": "^0.3.0",
+    "uglify-js": "^3.0.26"
   },
   "devDependencies": {
     "chai": "^4.0.2",
@@ -45,7 +48,6 @@
     "tsd": "^0.6.5",
     "typescript": "^2.4.1"
   },
-
   "scripts": {
     "watch": "nodemon -e ts -e hbs -w ./app -w ./views -w ./utils -w ./public -w ./config -w ./server.ts -x npm run start",
     "watch:serve": "ts-node --inspect src/index.ts",
