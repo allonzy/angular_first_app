@@ -133,7 +133,7 @@ app.set('view engine', 'hbs');
 // Register controller
 useExpressServer(app, {
 	defaultErrorHandler: false, // we use custom error handler 
-    controllers:[__dirname+"/app/*/controllers/*{.js,.ts}"],
+    controllers:[__dirname+"/app/**/controllers/*{.js,.ts}"],
     middlewares: [__dirname + "/node_modules/**/middlewares/*{.js,.ts}"]
 });
 app.use(router);
