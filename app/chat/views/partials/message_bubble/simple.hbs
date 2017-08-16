@@ -1,0 +1,15 @@
+<div class="discussion-bubble  discussion-bubble 
+  	{{#if is_sender}}
+      sender
+  	{{else}}
+      receiver
+	{{/if}}"
+	id="{{_id}}">
+	<img src="{{owner.avatar_url}}" class="avatar round"
+	{{#if owner.name}}
+		title="{{owner.name}}"
+	{{/if}}>
+	<span class="bubble-text message">
+		{{content}}
+	</span>
+</div>

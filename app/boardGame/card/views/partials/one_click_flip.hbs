@@ -1,0 +1,15 @@
+<div id="ace_of_hearth" class="card-oneflip"> 
+  <div class="front"> 
+    <img onCLick="$(this).parent().parent().flip('toggle')" src="{{front.url}}" width='200'>
+  </div> 
+  <div class="back">
+      <img id="{{back.url}}" width='200'>
+  </div> 
+</div>
+{{#script}}
+	$(document).ready(function() {
+		$('.card-oneflip').flip({
+		  trigger:'manual'
+		  });
+	});
+{{/script}}

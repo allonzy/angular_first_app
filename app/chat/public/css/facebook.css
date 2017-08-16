@@ -1,0 +1,73 @@
+.avatar {
+    width: 75px;
+    height: 75px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.round {
+    border-radius: 50%;
+}
+.chatbox{
+  display: block;
+  width: 500px;
+  border:solid 1px #eee; 
+  border-radius: 10px;
+}
+.sendmsg-area{
+  width:100%;
+  bottom: 0;
+}
+.discussion-bubble{
+  width:100%;
+  margin-top:5px;
+  display: inline-block;
+}
+.discussion-bubble > .avatar {
+  width: 75px;
+  height: 75px;
+  vertical-align: middle;
+  display:inline-block;
+  float:left;
+
+}
+.bubble-text{
+    width:67%;
+    border-radius: 15px;
+    line-height:35px;
+    padding: 15px;
+    background-color:#eee;
+    min-width:95px;
+    word-wrap: break-word
+}
+.sender > .avatar {
+    visibility: hidden;
+}
+.message{
+  display:inline-block;
+  vertical-align: middle;
+}
+.sender > .message {
+    background-color:#4080ff;
+    float: right;
+    margin-left:160px;
+}
+.receiver > .message {
+    
+    float:left;
+    background-color:#e9ebee;
+    margin-right:150px;
+    margin-left:50px;
+}
+.body{
+  height: 475px;
+  overflow: auto;
+}
+.footer {
+  height: 25px;
+  position: relative;
+  bottom: 0;
+  padding: 1rem;
+}
+.chatbox {
+  min-height: 150px;
+}

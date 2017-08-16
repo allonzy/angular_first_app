@@ -1,0 +1,12 @@
+{{#extend "layout.main"}}
+	{{#content "stylesheets"}}{{/content}}
+	{{#content "body"}}
+	    <h1>Todo list</h1>
+		{{>example.todos todos = todos}}
+		
+		<form method="post" id ="addtodo" action="/api/v1/Todo">
+			<input name="title">
+		</form>
+	  	<a href="#" onclick="document.getElementById('addtodo').submit();"> submit </a>
+	{{/content}}
+{{/extend}}

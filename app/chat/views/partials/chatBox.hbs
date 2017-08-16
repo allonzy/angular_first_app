@@ -1,0 +1,21 @@
+<div id="chatBox-12" class="chatbox">
+	<div class="header">
+		
+	</div>
+	<div class="body">
+		{{#each message}}
+			{{>chat.message_bubble.simple this}}
+		{{/each}}
+	</div>
+	<div class="footer">
+		<input class="sendmsg-area" placeholder="Send a message..." >
+	</div>
+</div>
+{{{js 'https://code.jquery.com/jquery-3.2.1.min.js'}}}
+{{{js 'https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.min.js'}}}
+{{{js 'static/chat/js/chatBox.js'}}}
+{{{css 'static/chat/css/facebook.css'}}}
+<script>
+	chatBox = new ChatBox(12);
+</script>
+<br>{{{warn 'this page use CDN, remove them, and add them to bundle' }}}
