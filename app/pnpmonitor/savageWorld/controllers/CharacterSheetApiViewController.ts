@@ -22,19 +22,22 @@ export class CharacterSheetController {
     }
 
     @Get("/savageworld/api/statsbox/:id")
-    @Render("pnpmonitor/savageWorld/views/partials/characterSheet/statsBox")
+    @Render("pnpmonitor/savageWorld/views/partials/statsBox/statsBox")
     getStatsBox(@Param("id") id: string){
-        return CharacterSheet.findById(id).lean();
+        return CharacterSheet.findById(id).lean().error((err)=>({
+          if(err){
+            return '';
+          }
+        }));
     }
 
     @Get("/savageworld/api/dices")
     getDice(){
-        return Object.keys(DiceEnum); 
+        return Object.keys(DiceEnum);
     }
-    
     @Get("/savageworld/api/stats")
     getStats(){
-        return Object.keys(StatEnum); 
+        return Object.keys(StatEnum);
     }
-    
+
 }

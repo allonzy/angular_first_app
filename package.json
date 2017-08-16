@@ -9,6 +9,7 @@
     "angular": "^1.6.4",
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.2",
+    "chokidar": "^1.7.0",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.3",
     "dt": "0.0.1",
@@ -49,7 +50,8 @@
     "typescript": "^2.4.1"
   },
   "scripts": {
-    "watch": "nodemon -e ts -e hbs -w ./app -w ./views -w ./utils -w ./public -w ./config -w ./server.ts -x npm run start",
+    "updateHandlebars": "npm -e 'require('./utils/UpdateHandlebars').registerHandlebarsPartials()",
+    "watch": "nodemon --config config/nodemon.json --exec npm run start",
     "watch:serve": "ts-node --inspect src/index.ts",
     "prestart": "npm run tsc",
     "start": "ts-node server.ts",

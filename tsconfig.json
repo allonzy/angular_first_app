@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "ES6",
     "module": "commonjs",
     "noImplicitAny": false,
     "removeComments": true,
@@ -9,13 +9,18 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true,
-    "listFiles": true,
+    "listFiles": false,
     "isolatedModules": false,
     "moduleResolution": "node",
     "suppressImplicitAnyIndexErrors": true,
-    "baseUrl": "."
-
+    "baseUrl": ".",
+    "pretty":true
   },
+  "include":[
+    "app/**/*.ts",
+    "server.ts",
+    "public/**/*.ts"
+  ],
   "exclude": [
     "dist",
     "node_modules"

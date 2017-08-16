@@ -22,13 +22,14 @@
       "moduleNameRegex": "(.*)"
     }
   ],
+  "src":"app",
   "view": {
-    "directory": "views",
+    "directory": "public/views",
     "view_engine": {
       "handlebars": {
         "partials_location": [
           {
-            "directory": "views/partials/**/*.hbs",
+            "directory": "public/views/partials/**/*.hbs",
             "moduleNameRegex": "views/partials/(.*).hbs"
           },
           {

@@ -12,28 +12,23 @@ import * as uniqueValidator from'mongoose-unique-validator';
 import * as glob from 'glob';
 
 import * as hbs_wrapper from 'hbs';
-import * as handlebarsHelper from 'handlebars-helpers'
-import * as layouts from 'handlebars-layouts';
 
-import {helpersBundle} from "./views/helpers/bundle";
+import {helpersBundle} from "./public/views/helpers/bundle";
+
+import * as UpdateHandlebars from './utils/UpdateHandlebars';
+
 import {createNameSpace} from './utils/NameSpaceHandler';
 import {readConfig,tree} from './utils/ReadConfig';
 import {errorHandler} from './utils/ErrorHandler';
+import {ColorsEnum} from './utils/ColorsEnum';
 //================================================
-export let color = {
-	black:"\x1b[30m%s\x1b[0m",
-	red:"\x1b[31m%s\x1b[0m",
-	green:"\x1b[32m%s\x1b[0m",
-	yellow:"\x1b[33m%s\x1b[0m",
-	blue:"\x1b[34m%s\x1b[0m",
-	magenta:"\x1b[35m%s\x1b[0m",
-	cyan:"\x1b[36m%s\x1b[0m",
-	white:"\x1b[36m%s\x1b[0m",		
-}
+
+
 //================================================
 let regexQuote = function(str) {
   return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 };
+
 declare var __dirname;
 // ==============Export component, (can be needed from controllers) ================
 export let config = readConfig('./config','config.json');
@@ -45,8 +40,8 @@ switch(config.env){
 	case 'dev':
 		// development error handler
 		// will print stacktrace
-		app.use(morgan('dev'));                                
-		break;		
+		app.use(morgan('dev'));
+		break;
 	case 'prod':
 		// production error handler
 		// no stacktraces leaked to user
@@ -69,8 +64,8 @@ if(config.public_directories){
 				staticDir.push(nameSpace);
 				console.log("route "+file+" to "+config.static_route+"/"+nameSpace);
 			}else{
-				console.warn(color.yellow,
-					"nameSpace error:fail to register "+file+" as {{>"+nameSpace+"}} \n" 
+				console.warn(ColorsEnum.yellow,
+					"nameSpace error:fail to register "+file+" as {{>"+nameSpace+"}} \n"
 					+"check your partials directories to resolve conflict"
 				);
 			}
@@ -83,71 +78,36 @@ app.set('views',[__dirname+"/"+config.view.directory+"/",__dirname+"/app/"]);
 
 // ===================== Handlebars (templating system) ===================================
 
-let hbsParam = config.view.view_engine.handlebars;
 
-if(hbsParam.partials_location){
-	var registeredPartials = [];
-	for (let partial of hbsParam.partials_location){
-		createNameSpace(partial.directory,partial.moduleNameRegex,'.',(file,nameSpace)=>{
-			if(registeredPartials.indexOf(nameSpace) === -1){
-				hbs.handlebars.registerPartial(nameSpace,fs.readFileSync(file).toString());
-				registeredPartials.push(nameSpace);
-				console.log("register "+file+" as {{> "+nameSpace+" }}");
-			}else{
-				console.warn(color.yellow,
-					"nameSpace error:fail to register "+file+" as {{>"+nameSpace+"}} \n" 
-					+"check your partials directories to resolve conflict"
-				);
-			}
-		});
-	}
-}
-/*
-if(hbsParam.helper_location){
-	var registeredHelpers = [];
-	for (let helper of hbsParam.helper_location){
-		createNameSpace(partial.directory,partial.moduleNameRegex,'.'()(file,nameSpace)=>{
-			if(registeredHelpers.indexOf(nameSpace) === -1){
-				module = require('./'+nameSpace);
-				hbs.handlebars.registerHelper(nameSpace.helperName,helper);
-				registeredHelpers.push(nameSpace);
-				console.log("register "+file+" as {{> "+nameSpace+" }}");
-			}else{
-				console.warn(color.yellow,
-					"nameSpace error:fail to register "+file+" as {{>"+nameSpace+"}} \n" 
-					+"check your partials directories to resolve conflict"
-				);
-			}
-		});
-	}
-}*/
-let utilsHelper = handlebarsHelper({
-		handlebars: hbs.handlebars
-	});
-hbs.registerHelper(layouts(hbs.handlebars));
-hbs.registerHelper(utilsHelper);
-hbs.registerHelper(helpersBundle);
+UpdateHandlebars.registerHelpers();
+// UpdateHandlebars.registerPartials();
+UpdateHandlebars.watch();
 
 app.set('view engine', 'hbs');
 
 // Register controller
 useExpressServer(app, {
-	defaultErrorHandler: false, // we use custom error handler 
+	defaultErrorHandler: false, // we use custom error handler
     controllers:[__dirname+"/app/**/controllers/*{.js,.ts}"],
     middlewares: [__dirname + "/node_modules/**/middlewares/*{.js,.ts}"]
 });
+
 app.use(router);
+app.get('/', function (req, res) {
+  res.render('index');
+})
+
 //==========================Error handling =================================================
 app.use(errorHandler);
 app.use(function(req, res, next){
-	if(res.statusCode 
+	/*if(res.statusCode
 		&& res.statusCode === 404
-		&& req.originalUrl.startsWith(config.static_route) == false){
+		&& req.originalUrl.startsWith(config.static_route) == false){*/
+    if(req.originalUrl.startsWith(config.static_route) == false){
 			res.status(404).render('error-pages/404', { url: req.originalUrl });
-
-	}else{
-		next();
-	}
+  	}else{
+  		next();
+  	}
 });
 //======================== Database connect (mongoose) =============================
 let db = config.database;
@@ -159,7 +119,7 @@ let dbConnectUri = db.driver+"://"
     +(db.port?(':'+db.port):'')
     +"/"+db.dbname
 ;
-//Add plugin to mongoose 
+//Add plugin to mongoose
 mongoose.plugin(uniqueValidator);
 mongoose.Promise = bluebird;
 
@@ -168,10 +128,7 @@ mongoose.connect(dbConnectUri);
 console.log("Connected to "+dbConnectUri);
 
 //====================================Start the server ======================================
-app.get('/', function (req, res) {
-  res.render('index');
-})
 
 let serv = config.server;
 app.listen(serv.port,serv.host);
-console.log(color.green,"server started on :"+serv.host+":"+serv.port);
+console.log(ColorsEnum.green,"server started on :"+serv.host+":"+serv.port);
