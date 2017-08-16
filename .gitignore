@@ -2,3 +2,7 @@
 /dist/
 /var/
 /ts-node-*/
+/typings/
+/perf.data
+/perf.data.old
+/package-lock.json
