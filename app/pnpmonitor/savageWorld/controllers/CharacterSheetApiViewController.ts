@@ -8,36 +8,15 @@ import { StatEnum } from "../model/characterSheet/interfaces/StatEnum";
 
 @Controller()
 export class CharacterSheetController {
-    @Post("/savageworld/api/characterSheet")
-    createCharacterSheet(
-        @BodyParam("caracterSheet") characterSheet :object
-      ){
-      let characterSheetEntity = new CharacterSheet({characterSheet});
-      characterSheetEntity.save((err)=>{
-        if(err){
-          //TODO Handle errors
-        }
-      });
-      return characterSheetEntity._id;
-    }
-
-    @Get("/savageworld/api/statsbox/:id")
+    @Get("/api/savageworld/views/statsbox/:id")
     @Render("pnpmonitor/savageWorld/views/partials/statsBox/statsBox")
     getStatsBox(@Param("id") id: string){
-        return CharacterSheet.findById(id).lean().error((err)=>({
-          if(err){
-            return '';
-          }
-        }));
-    }
-
-    @Get("/savageworld/api/dices")
-    getDice(){
-        return Object.keys(DiceEnum);
-    }
-    @Get("/savageworld/api/stats")
-    getStats(){
-        return Object.keys(StatEnum);
+        CharacterSheet.findById(id)
+        .lean()
+        .exec(function (err, sheet){
+         console.log(sheet);
+        });
+        return CharacterSheet.findById(id).lean();
     }
 
 }

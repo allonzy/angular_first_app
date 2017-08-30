@@ -43,6 +43,7 @@
     "gulp": "^3.9.1",
     "gulp-uglify": "^3.0.0",
     "mocha": "^3.4.2",
+    "mochahq": "^1.5.1",
     "nodemon": "^1.11.0",
     "selenium-webdriver": "^3.4.0",
     "ts-node": "^3.1.0",
@@ -53,10 +54,11 @@
     "updateHandlebars": "npm -e 'require('./utils/UpdateHandlebars').registerHandlebarsPartials()",
     "watch": "nodemon --config config/nodemon.json --exec npm run start",
     "watch:serve": "ts-node --inspect src/index.ts",
-    "prestart": "npm run tsc",
+    "prestart": "npm run tsc; npm run test",
     "start": "ts-node server.ts",
     "tsc": "tsc",
-    "test": "mocha -r ts-node/register test/**/*.ts"
+    "test": "mocha -r ts-node/register test/**/*.ts",
+    "uiTest":"mochahq -r ts-node/register test/**/*.ts"
   },
   "description": "A symfony like nodejs server",
   "repository": "https://github.com/allonzy/angular_first_app",

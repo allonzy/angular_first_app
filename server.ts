@@ -20,8 +20,11 @@ import * as UpdateHandlebars from './utils/UpdateHandlebars';
 import {createNameSpace} from './utils/NameSpaceHandler';
 import {readConfig,tree} from './utils/ReadConfig';
 import {errorHandler} from './utils/ErrorHandler';
+import {getApiRoutes} from './utils/ApiDescriptor';
+
 import {ColorsEnum} from './utils/ColorsEnum';
-//================================================
+//===============TEST TOMOVE==================
+
 
 
 //================================================
@@ -47,7 +50,9 @@ switch(config.env){
 		// no stacktraces leaked to user
 		app.use(morgan('common', { skip: function(req, res) { return res.statusCode < 400 }, stream: __dirname + 'var/logs/prod.log' }));
 		break;
-}// =========================Set up express ================================================
+}
+
+// =========================Set up express ================================================
 
              				// set the static files location /public/img will be /img for users
 app.use(bodyParser.urlencoded({'extended':'true'}));            // parse application/x-www-form-urlencoded
@@ -97,7 +102,12 @@ app.get('/', function (req, res) {
   res.render('index');
 })
 
-//==========================Error handling =================================================
+//=====================TODO MOVE =====================================
+app.get('/api',function (req,res) {
+	res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(getApiRoutes()));
+})
+// //==========================Error handling =================================================
 app.use(errorHandler);
 app.use(function(req, res, next){
 	/*if(res.statusCode
